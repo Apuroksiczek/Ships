@@ -1,43 +1,79 @@
 ﻿using Ships.Models;
+using ShipsApi.Models;
 using System.Data.Common;
 
 namespace Ships
 {
-    public class Game
+    public class Game : IGame
     {
         private int BoardSize { get; set; }
 
         private Board playerOneBoard;
         private Board playerTwoBoard;
 
-        private bool IsGameRunning = true;
+        private bool PlayerOneGameOver = false;
+        private bool PlayerTwoGameOver = false;
+
         private bool PlayerOneMove = true;
 
-        public Game(int boardSize, int numberOfShips)
+        public Game()
         {
-            BoardSize = boardSize;
-            playerOneBoard = new Board(BoardSize, numberOfShips);
-            playerTwoBoard = new Board(BoardSize, numberOfShips);
+            BoardSize = 2;
+            playerOneBoard = new Board(BoardSize, 1);
+            playerTwoBoard = new Board(BoardSize, 1);
+            PrepareGame();
+        }
+
+        public ShipsResponse GetGameStatus()
+        {
+            if (!PlayerOneGameOver || !PlayerTwoGameOver)
+            {
+                Step();
+            }
+
+            return new ShipsResponse()
+            {
+                PlayerOneBoard = ConvertCharsToStrings2D(playerOneBoard.Grid),
+                PlayerTweBoard = ConvertCharsToStrings2D(playerTwoBoard.Grid),
+                PlayerOneMove = PlayerOneMove,
+                Winner = GetWinner()
+            };
         }
 
         public void Start()
         {
-            PrepareGame();
-
-            while (IsGameRunning)
+            while (true)
             {
                 PrintBoards();
+                Step();
+            }
+        }
 
-                if (PlayerOneMove)
-                {
-                    ShotBoard(playerTwoBoard);
-                }
-                else
-                {
-                    ShotBoard(playerOneBoard);
-                }
+        private void Step()
+        {
+            if (PlayerOneMove)
+            {
+                ShotBoard(playerTwoBoard);
+            }
+            else
+            {
+                ShotBoard(playerOneBoard);
+            }
+        }
 
-                CheckGameOver();
+        private IEnumerable<IEnumerable<string>> ConvertCharsToStrings2D(char[,] grid)
+        {
+            int rows = grid.GetLength(0);
+            int cols = grid.GetLength(1);
+
+            for (int i = 0; i < rows; i++)
+            {
+                List<string> rowStrings = new List<string>();
+                for (int j = 0; j < cols; j++)
+                {
+                    rowStrings.Add(grid[i, j].ToString());
+                }
+                yield return rowStrings;
             }
         }
 
@@ -45,25 +81,13 @@ namespace Ships
         {
             if (playerOneBoard.IsGameOver())
             {
-                Console.WriteLine("GAME OVER");
-                Console.WriteLine("PLAYER ONE WINS");
-                Console.ReadLine();
+                PlayerOneGameOver = true;
             }
 
             if (playerTwoBoard.IsGameOver())
             {
-                Console.WriteLine("GAME OVER");
-                Console.WriteLine("PLAYER TWO WINS");
-                Console.ReadLine();
+                PlayerTwoGameOver = true;
             }
-        }
-
-        private void PrintBoards()
-        {
-            Console.WriteLine("PLAYER 1 BOARD:");
-            playerOneBoard.Display();
-            Console.WriteLine("PLAYER 2 BOARD:");
-            playerTwoBoard.Display();
         }
 
         private void PrepareGame()
@@ -94,6 +118,45 @@ namespace Ships
             }
 
             PlayerOneMove = !PlayerOneMove;
+            CheckGameOver();
+        }
+
+        private string GetWinner()
+        {
+            if (PlayerOneGameOver)
+            {
+                return "Player 2";
+            }
+
+            if (PlayerTwoGameOver)
+            {
+                return "Player 1";
+            }
+
+            return "";
+        }
+
+        private void PrintBoards()
+        {
+            Console.WriteLine("Player One Board:");
+            PrintBoard(playerOneBoard);
+            Console.WriteLine("Player Two Board:");
+            PrintBoard(playerTwoBoard);
+        }
+
+        private void PrintBoard(Board board)
+        {
+            int rows = board.Grid.GetLength(0);
+            int cols = board.Grid.GetLength(1);
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    Console.Write(board.Grid[i, j]);
+                }
+                Console.WriteLine();
+            }
         }
     }
 }

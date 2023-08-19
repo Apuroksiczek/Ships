@@ -1,5 +1,4 @@
 ﻿using Ships.Enums;
-using System.Data.Common;
 
 namespace Ships.Models
 {
