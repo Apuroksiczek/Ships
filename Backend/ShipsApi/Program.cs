@@ -1,3 +1,4 @@
+
 using Ships;
 
 var builder = WebApplication.CreateBuilder(args);
