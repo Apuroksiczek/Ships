@@ -5,11 +5,6 @@ namespace Ships.Models
 {
     public class Board
     {
-        public int Size { get; set; }
-        public int NumberOfShips { get; set; }
-        public char[,] Grid { get; set; }
-        public List<Ship> Ships { get; set; }
-
         public Board(int size, int numberOfShips)
         {
             Size = size;
@@ -17,16 +12,69 @@ namespace Ships.Models
             NumberOfShips = numberOfShips;
         }
 
-        public void InitializeBoard()
+        public char[,] Grid { get; set; }
+        public int NumberOfShips { get; set; }
+        public List<Ship> Ships { get; set; }
+        public int Size { get; set; }
+
+        public void SetGameToDeafult()
         {
-            InitializeMap();
+            InitializeGrid();
             Ships = Enumerable.Range(1, NumberOfShips).Select(size => new Ship { Size = size }).ToList();
 
             PlaceShips();
-            InitializeMap();
+            InitializeGrid();
         }
 
-        private void InitializeMap()
+        public bool IsEmptySpace(int row, int column)
+        {
+            return Grid[row, column] == (char)BoardStates.Empty;
+        }
+
+        public bool IsGameOver()
+        {
+            foreach (var ship in Ships)
+            {
+                if (ship.isSinked == false)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public void ShotBoard(int row, int column)
+        {
+            foreach (var ship in Ships)
+            {
+                var partHit = ship.Parts.FirstOrDefault(p => p.X == row && p.Y == column);
+                if (partHit != null)
+                {
+                    partHit.IsHit = true;
+                    MarkBoard(row, column, BoardStates.Hit);
+
+                    if (ship.IsShipSinked())
+                    {
+                        ship.isSinked = true;
+                        SinkShipOnBoard(ship);
+                    }
+
+                    return;
+                }
+            }
+
+            MarkBoard(row, column, BoardStates.Missed);
+        }
+
+        private void SinkShipOnBoard(Ship ship)
+        {
+            ship.Parts.ForEach(x =>
+            {
+                MarkBoard(x.X, x.Y, BoardStates.Sinked);
+            });
+        }
+
+        private void InitializeGrid()
         {
             int rows = Grid.GetLength(0);
             int columns = Grid.GetLength(1);
@@ -40,98 +88,7 @@ namespace Ships.Models
             }
         }
 
-        public void ShotBoard(int row, int column)
-        {
-            foreach (var ship in Ships)
-            {
-                var part = ship.Parts.FirstOrDefault(p => p.X == row && p.Y == column);
-                if (part != null)
-                {
-                    part.IsHit = true;
-                    MarkBoard(row, column, BoardStates.Hit);
-
-                    if (IsShipSinked(ship.Parts))
-                    {
-                        ship.isSinked = true;
-                        SinkShip(ship);
-                    }
-
-                    return;
-                }
-            }
-
-            MarkBoard(row, column, BoardStates.Missed);
-        }
-
-        private Ship SinkShip(Ship ship)
-        {
-            ship.isSinked = true;
-            ship.Parts.ForEach(x =>
-            {
-                MarkBoard(x.X, x.Y, BoardStates.Sinked);
-            });
-
-            return ship;
-        }
-
-        private bool IsShipSinked(List<ShipPart> parts)
-        {
-            foreach (var part in parts)
-            {
-                if (part.IsHit == false)
-                    return false;
-            }
-            return true;
-        }
-
-        private void PlaceShips()
-        {
-            foreach (var ship in Ships)
-            {
-                bool isPlaced = false;
-
-                while (!isPlaced)
-                {
-                    int row = new Random().Next(Size);
-                    int column = new Random().Next(Size);
-
-                    bool isHorizontal = RandomBoolean();
-
-                    ship.Parts = PlaceShip(ship, row, column, isHorizontal);
-
-                    if (ship.Parts != null)
-                    {
-                        isPlaced = true;
-                    }
-                }
-            }
-        }
-
-        private bool CanPlaceShip(Ship ship, int row, int column, bool isHorizontal)
-        {
-            if (!isHorizontal)
-            {
-                if (column + ship.Size > Size)
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                if (row + ship.Size > Size)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public bool IsEmptySpace(int row, int column)
-        {
-            return Grid[row, column] == (char)BoardStates.Empty;
-        }
-
-        private List<ShipPart> PlaceShip(Ship ship, int row, int column, bool isHorizontal)
+        private List<ShipPart> InitAndPlaceShipParts(Ship ship, int row, int column, bool isHorizontal)
         {
             if (!CanPlaceShip(ship, row, column, isHorizontal))
             {
@@ -157,11 +114,18 @@ namespace Ships.Models
             return parts;
         }
 
-        public bool IsGameOver()
+        private bool CanPlaceShip(Ship ship, int row, int column, bool isHorizontal)
         {
-            foreach (var ship in Ships)
+            if (!isHorizontal)
             {
-                if (ship.isSinked == false)
+                if (column + ship.Size > Size)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (row + ship.Size > Size)
                 {
                     return false;
                 }
@@ -169,14 +133,37 @@ namespace Ships.Models
             return true;
         }
 
-        private bool RandomBoolean()
+        private void PlaceShips()
         {
-            return new Random().NextDouble() > 0.5;
+            foreach (var ship in Ships)
+            {
+                bool isPlaced = false;
+
+                while (!isPlaced)
+                {
+                    int row = new Random().Next(Size);
+                    int column = new Random().Next(Size);
+
+                    bool isHorizontal = RandomBoolean();
+
+                    ship.Parts = InitAndPlaceShipParts(ship, row, column, isHorizontal);
+
+                    if (ship.Parts != null)
+                    {
+                        isPlaced = true;
+                    }
+                }
+            }
         }
 
         public void MarkBoard(int row, int column, BoardStates boardState)
         {
             Grid[row, column] = (char)boardState;
+        }
+
+        private bool RandomBoolean()
+        {
+            return new Random().NextDouble() > 0.5;
         }
     }
 }

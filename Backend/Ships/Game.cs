@@ -96,8 +96,8 @@ namespace Ships
             PlayerTwoGameOver = false;
             PlayerOneMove = true;
 
-            playerOneBoard.InitializeBoard();
-            playerTwoBoard.InitializeBoard();
+            playerOneBoard.SetGameToDeafult();
+            playerTwoBoard.SetGameToDeafult();
         }
 
         private (int, int) GetRandomCoordinates()
