@@ -5,11 +5,11 @@ export default function BoardsContainer({ playerOneBoard, playerTwoBoard }: Boar
   return (
     <div className='boards'>
       <div className='boards-board'>
-        <span className='boards-board-title'>Player 1 Board:</span>
+        <span className='boards-board__title'>Player 1 Board:</span>
         <Board board={playerOneBoard} />
       </div>
       <div className='boards-board'>
-        <span className='boards-board-title'>Player 2 Board:</span>
+        <span className='boards-board__title'>Player 2 Board:</span>
         <Board board={playerTwoBoard} />
       </div>
     </div>

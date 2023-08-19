@@ -1,21 +1,20 @@
 ﻿using Ships.Enums;
-using System.Data.Common;
 
 namespace Ships.Models
 {
     public class Board
     {
+        public char[,] Grid { get; set; }
+        public int NumberOfShips { get; set; }
+        public List<Ship> Ships { get; set; }
+        public int Size { get; set; }
+
         public Board(int size, int numberOfShips)
         {
             Size = size;
             Grid = new char[size, size];
             NumberOfShips = numberOfShips;
         }
-
-        public char[,] Grid { get; set; }
-        public int NumberOfShips { get; set; }
-        public List<Ship> Ships { get; set; }
-        public int Size { get; set; }
 
         public void SetGameToDeafult()
         {

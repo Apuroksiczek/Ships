@@ -8,12 +8,14 @@ import ResetButton from '../components/ResetButton';
 export default function MainPage() {
   const [data, setData] = useState<ShipsResponse | null>(null);
   const [loaded, setLoaded] = useState<boolean>(false);
+  const timeInterval = 100;
+  const url ="https://localhost:7043/api/ships"
 
   function getMovePlayer() {
     let colorClass = data?.playerOneMove ? "red" : "blue";
 
     return (
-      <span className='main-page-content__player-move'>
+      <span className='main-page__content-player-move'>
         <span className={colorClass}>Player{data?.playerOneMove ? "1" : "2"} :</span> Move
       </span>)
   }
@@ -21,7 +23,7 @@ export default function MainPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get("https://localhost:7043/api/ships/game-status");
+        const response = await axios.post(`${url}/next-step`);
         setData(response.data);
       } catch (error: any) {
         console.log(error.message);
@@ -32,7 +34,7 @@ export default function MainPage() {
 
     fetchData();
 
-    const interval = setInterval(fetchData, 10);
+    const interval = setInterval(fetchData, timeInterval);
 
     return () => {
       clearInterval(interval);
@@ -42,7 +44,7 @@ export default function MainPage() {
 
   async function reset() {
     try {
-      await axios.put("https://localhost:7043/api/ships/reset");
+      await axios.post(`${url}/reset`);
     } catch (error: any) {
       console.log(error.message);
     } finally {
@@ -56,7 +58,7 @@ export default function MainPage() {
         text={data?.winner}
       />
       {data && (
-        <div className='main-page-content'>
+        <div className='main-page__content'>
           <BoardsContainer
             playerOneBoard={data.playerOneBoard}
             playerTwoBoard={data.playerTwoBoard}

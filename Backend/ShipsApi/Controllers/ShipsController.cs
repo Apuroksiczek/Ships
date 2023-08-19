@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Ships;
-using ShipsApi.Models;
 
 namespace ShipsApi.Controllers
 {
@@ -15,13 +14,13 @@ namespace ShipsApi.Controllers
             _game = game;
         }
 
-        [HttpGet("game-status")]
-        public IActionResult Get()
+        [HttpPost("next-step")]
+        public IActionResult NextStep()
         {
             return Ok(_game.GetGameStatus());
         }
 
-        [HttpPut("reset")]
+        [HttpPost("reset")]
         public IActionResult Reset()
         {
             _game.PrepareGame();

@@ -5,7 +5,7 @@
   color: $white-color;
   padding: 1.25rem;
 
-  &-content {
+  &__content {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -15,7 +15,7 @@
     border-radius: 0.625rem;
     gap: 1.5rem;
 
-    &__player-move {
+    &-player-move {
       font-size: 1.2rem;
 
       .red {

@@ -1,7 +1,7 @@
-﻿using Ships.Constants;
+﻿using Microsoft.Extensions.Options;
+using Ships.Constants;
 using Ships.Models;
 using ShipsApi.Models;
-using System.Data.Common;
 
 namespace Ships
 {
@@ -17,11 +17,15 @@ namespace Ships
 
         private bool PlayerOneMove = true;
 
-        public Game()
+        private readonly GameSettings _gameSettings;
+
+        public Game(IOptions<GameSettings> gameSettings)
         {
-            BoardSize = ShipsConstants.BoardSize;
-            playerOneBoard = new Board(BoardSize, ShipsConstants.NumberOfShips);
-            playerTwoBoard = new Board(BoardSize, ShipsConstants.NumberOfShips);
+            _gameSettings = gameSettings.Value;
+
+            BoardSize = _gameSettings.BoardSize;
+            playerOneBoard = new Board(BoardSize, _gameSettings.NumberOfShips);
+            playerTwoBoard = new Board(BoardSize, _gameSettings.NumberOfShips);
             PrepareGame();
         }
 
