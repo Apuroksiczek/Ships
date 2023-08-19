@@ -1,4 +1,4 @@
-# Battleship Recruitment - Documentation
+# Battleship Recruitment - Decisions / Documentation
 
 ## Frontend (React)
 
@@ -45,6 +45,7 @@ All values related to game configuration like board and ship sizes can be modifi
 - Simple clear user interaface.
 - Application frontend written in BEM methodology.
 - Using the SCSS preprocessor for CSS.
+- The application is intended only for desktops.
 - Using the principles like KISS or DRY.
 
 
