@@ -1,4 +1,3 @@
-using Ships;
 using Ships.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
