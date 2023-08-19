@@ -5,6 +5,7 @@ namespace Ships.Models
     public class Board
     {
         public int Size { get; set; }
+        public int NumberOfShips { get; set; }
         public char[,] Grid { get; set; }
         public List<Ship> Ships { get; set; }
 
@@ -12,8 +13,7 @@ namespace Ships.Models
         {
             Size = size;
             Grid = new char[size, size];
-
-            Ships = Enumerable.Range(1, numberOfShips).Select(size => new Ship { Size = size }).ToList();
+            NumberOfShips = numberOfShips;
         }
 
         public void InitializeBoard()
@@ -28,6 +28,8 @@ namespace Ships.Models
                     MarkBoard(i, j, BoardStates.Empty);
                 }
             }
+
+            Ships = Enumerable.Range(1, NumberOfShips).Select(size => new Ship { Size = size }).ToList();
 
             PlaceShips();
         }

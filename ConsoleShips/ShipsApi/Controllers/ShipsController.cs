@@ -20,5 +20,12 @@ namespace ShipsApi.Controllers
         {
             return Ok(_game.GetGameStatus());
         }
+
+        [HttpPut("reset")]
+        public IActionResult Reset()
+        {
+            _game.PrepareGame();
+            return Ok();
+        }
     }
 }

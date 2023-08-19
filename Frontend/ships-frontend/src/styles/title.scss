@@ -1,0 +1,27 @@
+@import "./variables.scss";
+
+.title {
+  display: flex;
+  flex-direction: column;
+
+  &-text {
+    font-size: 6rem;
+    font-weight: 700;
+  }
+
+  &__winner {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    font-size: 4rem;
+    font-weight: 700;
+
+    .red {
+      color: $red-color;
+    }
+
+    .blue {
+      color: $blue-color;
+    }
+  }
+}

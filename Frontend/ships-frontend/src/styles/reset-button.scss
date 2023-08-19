@@ -1,0 +1,15 @@
+@import "./variables.scss";
+
+.reset-button {
+  background-color: $main-bg-color;
+  color: $white-color;
+  border: none;
+  padding: 0.625rem 1.25rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: $button-bg-hover-color;
+  }
+}

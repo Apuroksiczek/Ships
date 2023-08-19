@@ -18,23 +18,24 @@ namespace Ships
 
         public Game()
         {
-            BoardSize = 2;
-            playerOneBoard = new Board(BoardSize, 1);
-            playerTwoBoard = new Board(BoardSize, 1);
+            BoardSize = 8;
+            playerOneBoard = new Board(BoardSize, 3);
+            playerTwoBoard = new Board(BoardSize, 3);
             PrepareGame();
         }
 
         public ShipsResponse GetGameStatus()
         {
-            if (!PlayerOneGameOver || !PlayerTwoGameOver)
+            if (!CheckGameOver())
             {
+                Console.WriteLine($"{PlayerOneGameOver} {PlayerTwoGameOver}");
                 Step();
             }
 
             return new ShipsResponse()
             {
                 PlayerOneBoard = ConvertCharsToStrings2D(playerOneBoard.Grid),
-                PlayerTweBoard = ConvertCharsToStrings2D(playerTwoBoard.Grid),
+                PlayerTwoBoard = ConvertCharsToStrings2D(playerTwoBoard.Grid),
                 PlayerOneMove = PlayerOneMove,
                 Winner = GetWinner()
             };
@@ -77,21 +78,33 @@ namespace Ships
             }
         }
 
-        private void CheckGameOver()
+        private bool CheckGameOver()
         {
+            if (PlayerTwoGameOver || PlayerTwoGameOver)
+            {
+                return true;
+            }
+
             if (playerOneBoard.IsGameOver())
             {
                 PlayerOneGameOver = true;
+                return true;
             }
 
             if (playerTwoBoard.IsGameOver())
             {
                 PlayerTwoGameOver = true;
+                return true;
             }
+            return false;
         }
 
-        private void PrepareGame()
+        public void PrepareGame()
         {
+            PlayerOneGameOver = false;
+            PlayerTwoGameOver = false;
+            PlayerOneMove = true;
+
             playerOneBoard.InitializeBoard();
             playerTwoBoard.InitializeBoard();
         }
@@ -123,12 +136,12 @@ namespace Ships
 
         private string GetWinner()
         {
-            if (PlayerOneGameOver)
+            if (PlayerOneGameOver == true)
             {
                 return "Player 2";
             }
 
-            if (PlayerTwoGameOver)
+            if (PlayerTwoGameOver == true)
             {
                 return "Player 1";
             }
