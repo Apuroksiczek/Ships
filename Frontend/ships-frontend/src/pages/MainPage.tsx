@@ -32,7 +32,7 @@ export default function MainPage() {
 
     fetchData();
 
-    const interval = setInterval(fetchData, 500);
+    const interval = setInterval(fetchData, 10);
 
     return () => {
       clearInterval(interval);

@@ -1,4 +1,5 @@
-﻿using Ships.Models;
+﻿using Ships.Constants;
+using Ships.Models;
 using ShipsApi.Models;
 using System.Data.Common;
 
@@ -6,7 +7,7 @@ namespace Ships
 {
     public class Game : IGame
     {
-        private int BoardSize { get; set; }
+        private readonly int BoardSize;
 
         private Board playerOneBoard;
         private Board playerTwoBoard;
@@ -18,9 +19,9 @@ namespace Ships
 
         public Game()
         {
-            BoardSize = 8;
-            playerOneBoard = new Board(BoardSize, 3);
-            playerTwoBoard = new Board(BoardSize, 3);
+            BoardSize = ShipsConstants.BoardSize;
+            playerOneBoard = new Board(BoardSize, ShipsConstants.NumberOfShips);
+            playerTwoBoard = new Board(BoardSize, ShipsConstants.NumberOfShips);
             PrepareGame();
         }
 
@@ -28,7 +29,6 @@ namespace Ships
         {
             if (!CheckGameOver())
             {
-                Console.WriteLine($"{PlayerOneGameOver} {PlayerTwoGameOver}");
                 Step();
             }
 
@@ -39,15 +39,6 @@ namespace Ships
                 PlayerOneMove = PlayerOneMove,
                 Winner = GetWinner()
             };
-        }
-
-        public void Start()
-        {
-            while (true)
-            {
-                PrintBoards();
-                Step();
-            }
         }
 
         private void Step()
@@ -138,38 +129,15 @@ namespace Ships
         {
             if (PlayerOneGameOver == true)
             {
-                return "Player 2";
+                return PlayerNamesConstants.Player2;
             }
 
             if (PlayerTwoGameOver == true)
             {
-                return "Player 1";
+                return PlayerNamesConstants.Player1;
             }
 
-            return "";
-        }
-
-        private void PrintBoards()
-        {
-            Console.WriteLine("Player One Board:");
-            PrintBoard(playerOneBoard);
-            Console.WriteLine("Player Two Board:");
-            PrintBoard(playerTwoBoard);
-        }
-
-        private void PrintBoard(Board board)
-        {
-            int rows = board.Grid.GetLength(0);
-            int cols = board.Grid.GetLength(1);
-
-            for (int i = 0; i < rows; i++)
-            {
-                for (int j = 0; j < cols; j++)
-                {
-                    Console.Write(board.Grid[i, j]);
-                }
-                Console.WriteLine();
-            }
+            return PlayerNamesConstants.None;
         }
     }
 }

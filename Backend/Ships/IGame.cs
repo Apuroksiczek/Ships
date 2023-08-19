@@ -6,8 +6,6 @@ namespace Ships
     {
         ShipsResponse GetGameStatus();
 
-        void Start();
-
         public void PrepareGame();
     }
 }

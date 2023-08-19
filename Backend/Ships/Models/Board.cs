@@ -1,4 +1,5 @@
 ﻿using Ships.Enums;
+using System.Data.Common;
 
 namespace Ships.Models
 {
@@ -18,6 +19,15 @@ namespace Ships.Models
 
         public void InitializeBoard()
         {
+            InitializeMap();
+            Ships = Enumerable.Range(1, NumberOfShips).Select(size => new Ship { Size = size }).ToList();
+
+            PlaceShips();
+            InitializeMap();
+        }
+
+        private void InitializeMap()
+        {
             int rows = Grid.GetLength(0);
             int columns = Grid.GetLength(1);
 
@@ -27,25 +37,6 @@ namespace Ships.Models
                 {
                     MarkBoard(i, j, BoardStates.Empty);
                 }
-            }
-
-            Ships = Enumerable.Range(1, NumberOfShips).Select(size => new Ship { Size = size }).ToList();
-
-            PlaceShips();
-        }
-
-        public void Display()
-        {
-            int rows = Grid.GetLength(0);
-            int columns = Grid.GetLength(1);
-
-            for (int i = 0; i < rows; i++)
-            {
-                for (int j = 0; j < columns; j++)
-                {
-                    Console.Write(Grid[i, j] + " ");
-                }
-                Console.WriteLine();
             }
         }
 
@@ -104,11 +95,12 @@ namespace Ships.Models
                     int row = new Random().Next(Size);
                     int column = new Random().Next(Size);
 
-                    bool isHorizontal = NewRandomBoolean();
+                    bool isHorizontal = RandomBoolean();
 
-                    if (CanPlaceShip(ship, row, column, isHorizontal))
+                    ship.Parts = PlaceShip(ship, row, column, isHorizontal);
+
+                    if (ship.Parts != null)
                     {
-                        PlaceShip(ship, row, column, isHorizontal);
                         isPlaced = true;
                     }
                 }
@@ -117,18 +109,9 @@ namespace Ships.Models
 
         private bool CanPlaceShip(Ship ship, int row, int column, bool isHorizontal)
         {
-            bool isSpaceEmpty;
-
             if (!isHorizontal)
             {
                 if (column + ship.Size > Size)
-                {
-                    return false;
-                }
-
-                isSpaceEmpty = Enumerable.Range(0, ship.Size).All(i => IsEmptySpace(row, column + i));
-
-                if (!isSpaceEmpty)
                 {
                     return false;
                 }
@@ -136,13 +119,6 @@ namespace Ships.Models
             else
             {
                 if (row + ship.Size > Size)
-                {
-                    return false;
-                }
-
-                isSpaceEmpty = Enumerable.Range(0, ship.Size).All(i => IsEmptySpace(row + i, column));
-
-                if (!isSpaceEmpty)
                 {
                     return false;
                 }
@@ -155,17 +131,30 @@ namespace Ships.Models
             return Grid[row, column] == (char)BoardStates.Empty;
         }
 
-        private Ship PlaceShip(Ship ship, int row, int column, bool isHorizontal)
+        private List<ShipPart> PlaceShip(Ship ship, int row, int column, bool isHorizontal)
         {
-            ship.Parts = Enumerable.Range(0, ship.Size)
-            .Select(i => new ShipPart
+            if (!CanPlaceShip(ship, row, column, isHorizontal))
             {
-                X = isHorizontal ? row + i : row,
-                Y = isHorizontal ? column : column + i,
-            })
-            .ToList();
+                return null;
+            }
 
-            return ship;
+            List<ShipPart> parts = new List<ShipPart>();
+
+            for (int i = 0; i < ship.Size; i++)
+            {
+                int x = isHorizontal ? row + i : row;
+                int y = isHorizontal ? column : column + i;
+
+                if (!IsEmptySpace(x, y))
+                {
+                    return null;
+                }
+
+                parts.Add(new ShipPart { X = x, Y = y });
+                MarkBoard(x, y, BoardStates.Ship);
+            }
+
+            return parts;
         }
 
         public bool IsGameOver()
@@ -180,7 +169,7 @@ namespace Ships.Models
             return true;
         }
 
-        private bool NewRandomBoolean()
+        private bool RandomBoolean()
         {
             return new Random().NextDouble() > 0.5;
         }
