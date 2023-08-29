@@ -1,4 +1,4 @@
-# Battleship Recruitment - Decisions / Documentation
+# Battleship - Decisions / Documentation
 
 ## Frontend (React)
 
